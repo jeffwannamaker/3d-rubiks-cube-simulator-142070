@@ -108,15 +108,17 @@ export function Cube3D({
     if (!animating && moveQueue.length > 0) {
       setAnimating(true);
 
-      // For MVP, skip animation and immediately "complete"
+      // Animation duration based on speed - longer for visibility during scramble
+      const duration = isScrambling || isSolving ? 300 / animationSpeed : 500 / animationSpeed;
+      
       setTimeout(() => {
         setAnimating(false);
         onMoveComplete();
-      }, 200 / animationSpeed);
+      }, duration);
 
       // TODO: For advanced, interpolate rotation of groupRef for affected slice
     }
-  }, [moveQueue, animating, animationSpeed, onMoveComplete]);
+  }, [moveQueue, animating, animationSpeed, onMoveComplete, isScrambling, isSolving]);
 
   // Generate cubelets positions and face colors
   const cubelets = useMemo(() => {
