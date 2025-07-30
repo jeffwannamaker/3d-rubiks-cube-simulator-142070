@@ -67,6 +67,9 @@ function Sidebar({
   onSolve,
   debugMode,
   setDebugMode,
+  isScrambling = false,
+  isSolving = false,
+  isAnimating = false,
 }) {
   return (
     <SidebarContainer>
@@ -101,6 +104,9 @@ function Sidebar({
           onSolve={onSolve}
           debugMode={debugMode}
           setDebugMode={setDebugMode}
+          isScrambling={isScrambling}
+          isSolving={isSolving}
+          isAnimating={isAnimating}
         />
       </Section>
       <Section>

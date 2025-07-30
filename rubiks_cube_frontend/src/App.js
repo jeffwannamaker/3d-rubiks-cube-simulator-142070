@@ -17,6 +17,8 @@ function App() {
     setAnimationSpeed,
     debugMode,
     setDebugMode,
+    isScrambling,
+    isSolving,
     onUndo,
     onRedo,
     onReplay,
@@ -72,6 +74,9 @@ function App() {
           onSolve={onSolve}
           debugMode={debugMode}
           setDebugMode={setDebugMode}
+          isScrambling={isScrambling}
+          isSolving={isSolving}
+          isAnimating={moveQueue.length > 0}
         />
       </div>
       {/* Main 3D Cube Area */}
@@ -111,6 +116,8 @@ function App() {
             animationSpeed={animationSpeed}
             showIndices={debugMode}
             debugMode={debugMode}
+            isScrambling={isScrambling}
+            isSolving={isSolving}
           />
         </div>
       </div>

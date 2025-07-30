@@ -90,6 +90,8 @@ export function Cube3D({
   animationSpeed = 1.2,
   showIndices = false,
   debugMode = false,
+  isScrambling = false,
+  isSolving = false,
 }) {
   // Animation: When moveQueue receives new move, animate corresponding plane/slice
   const [animating, setAnimating] = useState(false);
@@ -257,7 +259,8 @@ export function Cube3D({
       {/* Camera controls */}
       <OrbitControls
         enablePan={false}
-        enableZoom={true}
+        enableZoom={!isScrambling && !isSolving}
+        enableRotate={!isScrambling && !isSolving}
         maxDistance={15 + cubeSize * 2}
         minDistance={3 + cubeSize}
         enableDamping={true}

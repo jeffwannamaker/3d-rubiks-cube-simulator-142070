@@ -174,10 +174,15 @@ export class RubiksCube {
     const validMoves = generateValidMoves(this.size);
     return validMoves.includes(move) || /^[UDFBRLMES]w?[1-9]?'?2?$/.test(move);
   }
-  _getInverseMove(move) {
+  // PUBLIC_INTERFACE
+  getInverseMove(move) {
     if (move.endsWith("'")) return move.replace("'", "");
     if (move.endsWith("2")) return move;
     return move + "'";
+  }
+  
+  _getInverseMove(move) {
+    return this.getInverseMove(move);
   }
   // TODO: Implement actual cube sticker mutation by face/layer/axis.
   /**
