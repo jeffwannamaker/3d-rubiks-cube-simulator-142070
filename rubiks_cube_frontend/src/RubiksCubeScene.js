@@ -3,7 +3,7 @@
  * Handles rendering, cubelets, camera, controls, lighting, and animated turns.
  */
 import React, { useRef, useEffect, useState, useMemo } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import { FACE_COLORS } from "./RubiksCubeEngine";
 import * as THREE from "three";
@@ -57,7 +57,6 @@ export function Cube3D({
 }) {
   // Animation: When moveQueue receives new move, animate corresponding plane/slice
   const [animating, setAnimating] = useState(false);
-  const [rotation, setRotation] = useState(null);
   const groupRef = useRef();
   const latestStateRef = useRef(cubeState);
 

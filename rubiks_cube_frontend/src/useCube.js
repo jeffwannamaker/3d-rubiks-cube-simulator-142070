@@ -68,7 +68,7 @@ export function useCube(initialSize = 3) {
     setMoveHistory([...cube.moveHistory]);
   };
   const onSolve = () => {
-    const solution = cube.solve();
+    cube.solve();
     setCubeState(cube.getState());
     setMoveHistory([...cube.moveHistory]);
     // Optionally animate the solve moves

@@ -17,7 +17,6 @@ function App() {
     setAnimationSpeed,
     debugMode,
     setDebugMode,
-    doMove,
     onUndo,
     onRedo,
     onReplay,

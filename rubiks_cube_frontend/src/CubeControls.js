@@ -3,7 +3,7 @@
  */
 import React from "react";
 import styled from "styled-components";
-import { FaUndo, FaRedo, FaPlay, FaBug, FaRandom, FaStepBackward, FaCheckCircle, FaSync } from "react-icons/fa";
+import { FaUndo, FaRedo, FaPlay, FaBug, FaRandom, FaCheckCircle, FaSync } from "react-icons/fa";
 
 const ButtonBar = styled.div`
   display: flex;

@@ -8,12 +8,6 @@ import MoveLog from "./MoveLog";
 import CubeControls from "./CubeControls";
 import { FACE_COLORS, FACE_NAMES } from "./RubiksCubeEngine";
 
-const colors = {
-  primary: "#1976d2",
-  accent: "#388e3c",
-  secondary: "#f57c00"
-};
-
 const SidebarContainer = styled.div`
   background: rgba(24,26,30,0.98);
   color: #f5f5f5;
