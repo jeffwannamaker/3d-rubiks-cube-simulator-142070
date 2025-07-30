@@ -172,7 +172,7 @@ export class RubiksCube {
   // Move parsing & helpers
   _isValidMove(move) {
     const validMoves = generateValidMoves(this.size);
-    return validMoves.includes(move) || /^[UDFBRLMES]w?[1-9]?'?2?$/.test(move);
+    return validMoves.includes(move);
   }
   // PUBLIC_INTERFACE
   getInverseMove(move) {
@@ -248,67 +248,98 @@ export class RubiksCube {
    */
   _rotateAdjacentEdges(face, prime, state, size) {
     // Define adjacent face cycles for each face turn
+    // The cycles are defined in clockwise order when looking at the face
     const adjacentCycles = {
       U: [
-        { face: 2, edge: 'top' },    // Front top
-        { face: 1, edge: 'top' },    // Right top  
-        { face: 5, edge: 'top' },    // Back top
-        { face: 4, edge: 'top' }     // Left top
+        { face: 2, edge: 'top' },    // Front top (F)
+        { face: 1, edge: 'top' },    // Right top (R)
+        { face: 5, edge: 'top' },    // Back top (B)
+        { face: 4, edge: 'top' }     // Left top (L)
       ],
       D: [
-        { face: 2, edge: 'bottom' }, // Front bottom
-        { face: 4, edge: 'bottom' }, // Left bottom
-        { face: 5, edge: 'bottom' }, // Back bottom
-        { face: 1, edge: 'bottom' }  // Right bottom
+        { face: 2, edge: 'bottom' }, // Front bottom (F)
+        { face: 4, edge: 'bottom' }, // Left bottom (L) 
+        { face: 5, edge: 'bottom' }, // Back bottom (B)
+        { face: 1, edge: 'bottom' }  // Right bottom (R)
       ],
       F: [
-        { face: 0, edge: 'bottom' }, // Up bottom
-        { face: 1, edge: 'left' },   // Right left
-        { face: 3, edge: 'top' },    // Down top
-        { face: 4, edge: 'right' }   // Left right
+        { face: 0, edge: 'bottom' }, // Up bottom (U)
+        { face: 1, edge: 'left' },   // Right left (R)
+        { face: 3, edge: 'top' },    // Down top (D) - reversed
+        { face: 4, edge: 'right' }   // Left right (L)
       ],
       B: [
-        { face: 0, edge: 'top' },    // Up top
-        { face: 4, edge: 'left' },   // Left left
-        { face: 3, edge: 'bottom' }, // Down bottom
-        { face: 1, edge: 'right' }   // Right right
+        { face: 0, edge: 'top' },    // Up top (U) - reversed
+        { face: 4, edge: 'left' },   // Left left (L)
+        { face: 3, edge: 'bottom' }, // Down bottom (D)
+        { face: 1, edge: 'right' }   // Right right (R)
       ],
       R: [
-        { face: 0, edge: 'right' },  // Up right
-        { face: 2, edge: 'right' },  // Front right
-        { face: 3, edge: 'right' },  // Down right
-        { face: 5, edge: 'left' }    // Back left (reversed)
+        { face: 0, edge: 'right' },  // Up right (U)
+        { face: 2, edge: 'right' },  // Front right (F)
+        { face: 3, edge: 'right' },  // Down right (D)
+        { face: 5, edge: 'left' }    // Back left (B) - reversed
       ],
       L: [
-        { face: 0, edge: 'left' },   // Up left
-        { face: 5, edge: 'right' },  // Back right (reversed)
-        { face: 3, edge: 'left' },   // Down left
-        { face: 2, edge: 'left' }    // Front left
+        { face: 0, edge: 'left' },   // Up left (U)
+        { face: 5, edge: 'right' },  // Back right (B) - reversed
+        { face: 3, edge: 'left' },   // Down left (D)
+        { face: 2, edge: 'left' }    // Front left (F)
       ]
     };
 
     const cycle = adjacentCycles[face];
     if (!cycle) return;
 
-    // Extract edge data
-    const edges = cycle.map(({ face: faceIdx, edge }) => 
-      this._getEdge(state[faceIdx], edge, size)
-    );
+    // Extract edge data - handle reversals for back face connections
+    const edges = cycle.map(({ face: faceIdx, edge }, index) => {
+      let edgeData = this._getEdge(state[faceIdx], edge, size);
+      
+      // Handle reversed edges for certain face combinations
+      if ((face === 'F' && index === 2) || // F face, D edge 
+          (face === 'B' && index === 0) || // B face, U edge
+          (face === 'R' && index === 3) || // R face, B edge
+          (face === 'L' && index === 1)) { // L face, B edge
+        edgeData = [...edgeData].reverse();
+      }
+      
+      return edgeData;
+    });
 
     // Rotate the edges
     if (prime) {
-      // Counterclockwise - rotate edges backward
+      // Counterclockwise - shift edges backward (right to left in cycle)
       for (let i = 0; i < cycle.length; i++) {
         const { face: faceIdx, edge } = cycle[i];
-        const prevIndex = (i + 1) % cycle.length;
-        this._setEdge(state[faceIdx], edge, edges[prevIndex], size);
+        const sourceIndex = (i + 1) % cycle.length;
+        let edgeData = [...edges[sourceIndex]];
+        
+        // Handle reversed edges when setting
+        if ((face === 'F' && i === 2) || // F face, D edge 
+            (face === 'B' && i === 0) || // B face, U edge
+            (face === 'R' && i === 3) || // R face, B edge
+            (face === 'L' && i === 1)) { // L face, B edge
+          edgeData = edgeData.reverse();
+        }
+        
+        this._setEdge(state[faceIdx], edge, edgeData, size);
       }
     } else {
-      // Clockwise - rotate edges forward  
+      // Clockwise - shift edges forward (left to right in cycle)
       for (let i = 0; i < cycle.length; i++) {
         const { face: faceIdx, edge } = cycle[i];
-        const nextIndex = (i + cycle.length - 1) % cycle.length;
-        this._setEdge(state[faceIdx], edge, edges[nextIndex], size);
+        const sourceIndex = (i + cycle.length - 1) % cycle.length;
+        let edgeData = [...edges[sourceIndex]];
+        
+        // Handle reversed edges when setting
+        if ((face === 'F' && i === 2) || // F face, D edge 
+            (face === 'B' && i === 0) || // B face, U edge
+            (face === 'R' && i === 3) || // R face, B edge
+            (face === 'L' && i === 1)) { // L face, B edge
+          edgeData = edgeData.reverse();
+        }
+        
+        this._setEdge(state[faceIdx], edge, edgeData, size);
       }
     }
   }
